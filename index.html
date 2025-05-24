@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision-Making Experiment</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gray-100: #ecf0f1;
+            --gray-300: #bdc3c7;
+            --gray-500: #7f8c8d;
+            --text: #34495e;
+            --serif: "Georgia", "Times New Roman", Times, serif;
+            --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; }
+        
+        body {
+            font: 17px/1.7 var(--serif);
+            background: var(--gray-100);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.1);
+        }
+
+        .experiment-header {
+            text-align: center;
+            padding: 15px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 20px -30px;
+        }
+
+        .experiment-header h1 {
+            margin: 0;
+            color: #fff;
+            font-family: var(--sans);
+            font-size: 1.6em;
+        }
+
+        .page-info {
+            text-align: center;
+            margin: 15px 0;
+            font-style: italic;
+            font-family: var(--sans);
+            color: var(--gray-500);
+        }
+
+        .progress-wrap {
+            width: 100%;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 15px;
+            background: var(--success);
+            border-radius: 5px;
+            transition: width .4s;
+            font-size: .7em;
+            text-align: center;
+            line-height: 15px;
+            color: #fff;
+        }
+
+        .page-section {
+            display: none;
+            animation: fade 0.5s ease;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--sans);
+            color: var(--primary);
+            margin: 0 0 25px 0;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: var(--accent);
+            margin-top: 30px;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            margin-top: 25px;
+        }
+
+        p, li {
+            margin-bottom: 12px;
+        }
+
+        ul, ol {
+            padding-left: 25px;
+        }
+
+        .card {
+            background: #f9f9f9;
+            border: 1px solid var(--gray-300);
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 6px;
+        }
+
+        .important-note {
+            background: #fff3cd;
+            border-left: 5px solid #ffeeba;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font: bold .95em var(--sans);
+            color: var(--primary);
+        }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            font: 1em var(--serif);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .button-wrap {
+            text-align: right;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font: 600 1em var(--sans);
+            cursor: pointer;
+            transition: background .3s;
+            margin-left: 10px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .timer {
+            background: var(--warning);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .question-container {
+            background: #f8f9fa;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .question-number {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .options {
+            margin-top: 1rem;
+        }
+
+        .option {
+            display: block;
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            background: white;
+            border: 2px solid var(--gray-300);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            border-color: var(--accent);
+            background: #f0f8ff;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 0.75rem;
+            width: auto;
+        }
+
+        .option.selected {
+            border-color: var(--success);
+            background: #f0fff4;
+        }
+
+        .group-display {
+            text-align: center;
+            padding: 2rem;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 3px solid var(--accent);
+            border-radius: 8px;
+            margin: 1rem 0;
+            background: linear-gradient(45deg, #f0f8ff, #e6f3ff);
+        }
+
+        .results-summary {
+            background: var(--gray-100);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .results-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .results-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .data-export {
+            background: var(--gray-100);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 2rem;
+        }
+
+        .data-export textarea {
+            font-family: monospace;
+            font-size: 0.8rem;
+            height: 200px;
+            width: 100%;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .error {
+            color: var(--danger);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .success {
+            color: var(--success);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .experiment-header {
+                margin: -20px -20px 15px -20px;
+                padding: 10px;
+            }
+            
+            .experiment-header h1 {
+                font-size: 1.3em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .button-wrap {
+                text-align: center;
+            }
+            
+            .btn {
+                margin: 5px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="experiment-header">
+            <h1>Decision-Making Experiment</h1>
+        </header>
+
+        <p class="page-info">
+            <span id="page-indicator">Screen 1 of 15</span>
+        </p>
+        
+        <div class="progress-wrap">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+
+        <!-- Screen 1: Welcome -->
+        <section id="p-intro" class="page-section active">
+            <h2>Welcome to the Experiment</h2>
+            <p>Welcome! This is an experiment on decision-making. Please read the following information carefully:</p>
+            <ul>
+                <li>All information provided is truthful and involves no deception</li>
+                <li>All decisions you make are anonymous</li>
+                <li>No communication with other participants is permitted</li>
+                <li>You will receive a $5.00 show-up fee</li>
+                <li>Additional earnings depend on your decisions (1 token = $0.09)</li>
+            </ul>
+            
+            <div class="important-note">
+                <strong>Payment Structure:</strong> Your final payment will include the show-up fee plus earnings from ONE randomly selected task (either trivia performance, belief elicitation, or hiring decision).
+            </div>
+            
+            <div class="button-wrap">
+                <button class="btn" onclick="nextScreen()">Begin Experiment</button>
+            </div>
+        </section>
+
+        <!-- Screen 2: Trivia Instructions -->
+        <section id="p-trivia-instr" class="page-section">
+            <h2>Phase 1: Trivia Task Instructions</h2>
+            
+            <h4>Task Overview</h4>
+            <p>You will answer <strong>25 multiple-choice questions</strong> in <strong>6 minutes</strong>.</p>
+            
+            <h4>Payment if This Task is Selected</h4>
+            <ul>
+                <li><strong>High Performance</strong> (top half of participants): 250 tokens</li>
+                <li><strong>Low Performance</strong> (bottom half of participants): 100 tokens</li>
+            </ul>
+            
+            <div class="important-note">
+                If there is a tie at the cutoff, it will be broken randomly.
+            </div>
+            
+            <div class="button-wrap">
+                <button class="btn" onclick="startTrivia()">Start Trivia Task</button>
+            </div>
+        </section>
+
+        <!-- Screen 3: Trivia Task -->
+        <section id="p-trivia-task" class="page-section">
+            <h2>Trivia Questions</h2>
+            <div class="timer" id="timer">Time Remaining: 6:00</div>
+            <div id="trivia-container"></div>
+            <div class="button-wrap">
+                <button class="btn" onclick="previousQuestion()" id="prevBtn" style="display:none;">Previous</button>
+                <button class="btn" onclick="nextQuestion()" id="nextBtn">Next Question</button>
+                <button class="btn btn-success" onclick="submitTrivia()" id="submitBtn" style="display:none;">Submit Answers</button>
+            </div>
+        </section>
+
+        <!-- Screen 4: Performance Classification -->
+        <section id="p-classification" class="page-section">
+            <h2>Performance Classification</h2>
+            <p>You have completed the trivia task. All participants are now classified as either:</p>
+            <ul>
+                <li><strong>High Performance:</strong> Top half of participants</li>
+                <li><strong>Low Performance:</strong> Bottom half of participants</li>
+            </ul>
+            <div class="important-note">
+                <strong>Note:</strong> You will not be told your actual performance classification at this time.
+            </div>
+            <div class="button-wrap">
+                <button class="btn" onclick="nextScreen()">Continue</button>
+            </div>
+        </section>
+
+        <!-- Screen 5: Belief About Own Performance Instructions -->
+        <section id="p-belief-instr" class="page-section">
+            <h2>Your Belief About Your Performance</h2>
+            
+            <h4>Instructions</h4>
+            <p>Please indicate what you believe are the chances that you are a <strong>High Performance</strong> participant (i.e., in the top half).</p>
+            
+            <div class="card">
+                <p><strong>Payment Mechanism:</strong> This question uses an incentive-compatible mechanism. Reporting your true belief maximizes your expected earnings. You will either receive 100 or 250 tokens based on your reported belief and your actual performance.</p>
+            </div>
+            
+            <div class="button-wrap">
+                <button class="btn" onclick="nextScreen()">Continue</button>
+            </div>
+        </section>
+
+        <!-- Screen 6: Belief About Own Performance -->
+        <section id="p-belief-own" class="page-section">
+            <h2>Enter Your Belief</h2>
+            <div class="card">
+                <label for="beliefOwn">What are the chances (0-100) that you are a High Performance participant?</label>
+                <input type="number" id="beliefOwn" min="0" max="100" placeholder="Enter a number between 0 and 100">
+                <small style="color: #666;">0 = No chance, 100 = Completely certain</small>
+                <div id="beliefOwnError" class="error" style="display:none;"></div>
+            </div>
+            <div class="button-wrap">
+                <button class="btn" onclick="submitBeliefOwn()">Submit</button>
+            </div>
+        </section>
+
+        <!-- Screen 7: Group Assignment Instructions -->
+        <section id="p-group-instr" class="page-section">
+            <h2>Group Assignment</h2>
+            
+            <h4>How Groups Are Assigned</h4>
+            <p>All participants will now be assigned to either a <strong>Top Group</strong> or <strong>Bottom Group</strong> using one of two mechanisms:</p>
+            
+            <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                <div class="card" style="flex: 1; background: #f0f8ff; border: 1px solid #cce7ff;">
+                    <h4 style="color: var(--primary);">Mechanism A (Highly Informative)</h4>
+                    <ul>
+                        <li>95% chance: Group reflects performance</li>
+                        <li>5% chance: Group doesn't reflect performance</li>
+                    </ul>
+                </div>
+                <div class="card" style="flex: 1; background: #fff8f0; border: 1px solid #ffe7cc;">
+                    <h4 style="color: var(--warning);">Mechanism B (Mildly Informative)</h4>
+                    <ul>
+                        <li>55% chance: Group reflects performance</li>
+                        <li>45% chance: Group doesn't reflect performance</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <strong>Important:</strong> A fair coin flip determines which mechanism is used (50% chance each). You will see your group assignment but won't know which mechanism was used or whether your group reflects your performance.
+            </div>
+            
+            <div class="button-wrap">
+                <button class="btn" onclick="assignGroup()">Reveal My Group</button>
+            </div>
+        </section>
+
+        <!-- Screen 8: Group Assignment Result -->
+        <section id="p-group-show" class="page-section">
+            <h2>Your Group Assignment</h2>
+            <p style="text-align: center; margin-bottom: 1rem;">You have been assigned to:</p>
+            <div class="group-display" id="groupDisplay">
+                <!-- Group will be displayed here -->
+            </div>
+            <div class="important-note">
+                Remember: You don't know which mechanism was used or whether this group reflects your actual performance.
+            </div>
+            <div class="button-wrap">
+                <button class="btn" onclick="nextScreen()">Continue</button>
+            </div>
+        </section>
+
+        <!-- Screen 9: Hiring Instructions -->
+        <section id="p-hire-instr" class="page-section">
+            <h2>Hiring Decisions</h2>
+            
+            <h4>Task Overview</h4>
+            <p>You will make hiring decisions for workers from both the Top Group and Bottom Group.</p>
+            
+            <h4>Rewards</h4>
+            <ul>
+                <li><strong>High Performance worker:</strong> 200 tokens</li>
+                <li><strong>Low Performance worker:</strong> 40 tokens</li>
+            </ul>
+            
+            <h4>Your Endowment</h4>
+            <p>You have <strong>160 tokens</strong> for each hiring decision.</p>
+            
+            <div class="card">
+                <p><strong>Mechanism:</strong> You'll state your maximum willingness to pay. A random cost (0-200) will be drawn. If the cost ≤ your bid, you hire the worker at that cost. Otherwise, you don't hire. This mechanism incentivizes truthful bidding.</p>
+            </div>
+            
+            <div class="button-wrap">
+                <button class="btn" onclick="nextScreen()">Continue to Hiring Decisions</button>
+            </div>
+        </section>
+
+        <!-- Screen 10: Hiring Decisions -->
+        <section id="p-hire" class="page-section">
+            <h2>State Your Willingness to Pay</h2>
+            <p>For each group, enter the maximum you're willing to pay to hire a randomly selected member (0-200 tokens):</p>
+            
+            <div class="card">
+                <label for="wtpTop">Willingness to pay for a Top Group worker:</label>
+                <input type="number" id="wtpTop" min="0" max="200" placeholder="0-200">
+                <div id="wtpTopError" class="error" style="display:none;"></div>
+            </div>
+            
+            <div class="card">
+                <label for="wtpBottom">Willingness to pay for a Bottom Group worker:</label>
+                <input type="number" id="wtpBottom" min="0" max="200" placeholder="0-200">
+                <div id="wtpBottomError" class="error" style="display:none;"></div>
+            </div>
+            
+            <div class="important-note">
+                Remember: You have 160 tokens endowment for each decision. Truthful reporting maximizes your expected earnings.
+            </div>
+            
+            <div class="button-wrap">
+                <button class="btn" onclick="submitHiring()">Submit Hiring Decisions</button>
+            </div>
+        </section>
+
+        <!-- Screen 11: Mechanism Belief Instructions -->
+        <section id="p-mech-instr" class="page-section">
+            <h2>Belief About Group Assignment Mechanism</h2>
+            
+            <h4>Final Belief Question</h4>
+            <p>Recall that groups were assigned using either:</p>
+            <ul>
+                <li><strong>Mechanism A:</strong> 95% accuracy (highly informative)</li>
+                <li><strong>Mechanism B:</strong> 55% accuracy (mildly informative)</li>
+            </ul>
+            <p>Please indicate your belief about which mechanism was used.</p>
+            
+            <div class="card">
+                <p><strong>Payment:</strong> This uses the same incentive-compatible mechanism as before. Truthful reporting maximizes expected earnings.</p>
+            </div>
+            
+            <div class="button-wrap">
+                <button class="btn" onclick="nextScreen()">Continue</button>
+            </div>
+        </section>
+
+        <!-- Screen 12: Mechanism Belief -->
+        <section id="p-mech-belief" class="page-section">
+            <h2>Enter Your Belief</h2>
+            <div class="card">
+                <label for="beliefMech">What are the chances (0-100) that Mechanism A (highly informative) was used?</label>
+                <input type="number" id="beliefMech" min="0" max="100" placeholder="Enter a number between 0 and 100">
+                <small style="color: #666;">0 = Definitely Mechanism B, 100 = Definitely Mechanism A</small>
+                <div id="beliefMechError" class="error" style="display:none;"></div>
+            </div>
+            <div class="button-wrap">
+                <button class="btn" onclick="submitMechBelief()">Submit</button>
+            </div>
+        </section>
+
+        <!-- Screen 13: Demographics -->
+        <section id="p-demo" class="page-section">
+            <h2>Background Information</h2>
+            
+            <div class="card">
+                <label for="gender">Gender:</label>
+                <select id="gender">
+                    <option value="">Please select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+            </div>
+            
+            <div class="card">
+                <label for="age">Age:</label>
+                <input type="number" id="age" min="18" max="99" placeholder="Enter your age">
+            </div>
+            
+            <div class="card">
+                <label for="education">Highest level of education:</label>
+                <select id="education">
+                    <option value="">Please select</option>
+                    <option value="High school or equivalent">High school or equivalent</option>
+                    <option value="Some college">Some college</option>
+                    <option value="Bachelor's degree">Bachelor's degree</option>
+                    <option value="Master's degree">Master's degree</option>
+                    <option value="Doctoral degree">Doctoral degree</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div class="card">
+                <label for="taskDifficulty">How difficult did you find the trivia task?</label>
+                <select id="taskDifficulty">
+                    <option value="">Please select</option>
+                    <option value="Very easy">Very easy</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Difficult">Difficult</option>
+                    <option value="Very difficult">Very difficult</option>
+                </select>
+            </div>
+            
+            <div id="demoError" class="error" style="display:none;"></div>
+            
+            <div class="button-wrap">
+                <button class="btn" onclick="submitDemo()">Submit</button>
+            </div>
+        </section>
+
+        <!-- Screen 14: Results -->
+        <section id="p-results" class="page-section">
+            <h2>Experiment Complete</h2>
+            
+            <div class="card">
+                <h3>Summary of Your Responses</h3>
+                <div class="results-summary" id="resultsSummary">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Payment Calculation (Simulated)</h3>
+                <div class="results-summary">
+                    <div class="results-item">
+                        <span>Show-up fee:</span>
+                        <span>$5.00</span>
+                    </div>
+                    <div class="results-item">
+                        <span>Selected task:</span>
+                        <span id="selectedTask">Trivia Performance</span>
+                    </div>
+                    <div class="results-item">
+                        <span>Tokens earned:</span>
+                        <span id="tokensEarned">250</span>
+                    </div>
+                    <div class="results-item">
+                        <span>Token value ($0.09 each):</span>
+                        <span id="tokenValue">$22.50</span>
+                    </div>
+                    <div class="results-item">
+                        <span><strong>Total Payment:</strong></span>
+                        <span id="totalPayment"><strong>$27.50</strong></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-wrap">
+                <button class="btn btn-success" onclick="downloadData()">Download Data</button>
+                <button class="btn" onclick="showDataExport()">View Raw Data</button>
+            </div>
+        </section>
+
+        <!-- Screen 15: Data Export -->
+        <section id="p-data-export" class="page-section">
+            <h2>Experimental Data</h2>
+            <div class="card">
+                <p>Below is your complete experimental data in JSON format. You can copy this for analysis:</p>
+                <div class="data-export">
+                    <textarea id="rawData" readonly></textarea>
+                </div>
+            </div>
+            <div class="button-wrap">
+                <button class="btn" onclick="downloadData()">Download as File</button>
+                <button class="btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+                <button class="btn" onclick="goToScreen(13)">Back to Results</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Experimental data storage
+        let experimentData = {
+            participantId: 'P' + Date.now() + Math.random().toString(36).substr(2, 9),
+            startTime: new Date().toISOString(),
+            treatment: null,
+            triviaAnswers: [],
+            triviaScore: 0,
+            triviaTimeSpent: 0,
+            performanceLevel: null,
+            beliefOwnPerformance: null,
+            assignedGroup: null,
+            mechanismUsed: null,
+            wtpTopGroup: null,
+            wtpBottomGroup: null,
+            beliefMechanism: null,
+            demographics: {},
+            completedScreens: [],
+            endTime: null,
+            metadata: {
+                userAgent: navigator.userAgent,
+                screenResolution: screen.width + 'x' + screen.height,
+                browserLanguage: navigator.language,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            }
+        };
+
+        // Trivia questions - Easy vs Hard treatment
+        const triviaQuestions = {
+            easy: [
+                { question: "Which of the following dogs is the smallest?", options: ["Dachshund", "Poodle", "Pomeranian", "Chihuahua"], correct: 3 },
+                { question: "From what trees do acorns grow?", options: ["Oak", "Maple", "Walnut", "Beech"], correct: 0 },
+                { question: "What color are emeralds?", options: ["Blue", "Green", "Red", "Purple"], correct: 1 },
+                { question: "Who is the patron saint of Ireland?", options: ["St David", "St Andrew", "St George", "St. Patrick"], correct: 3 },
+                { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Perth"], correct: 2 },
+                { question: "How many sides does a triangle have?", options: ["2", "3", "4", "5"], correct: 1 },
+                { question: "Which planet is closest to the Sun?", options: ["Venus", "Earth", "Mercury", "Mars"], correct: 2 },
+                { question: "What is 2 + 2?", options: ["3", "4", "5", "6"], correct: 1 },
+                { question: "Which animal is known as the 'King of the Jungle'?", options: ["Tiger", "Lion", "Elephant", "Giraffe"], correct: 1 },
+                { question: "How many days are there in a leap year?", options: ["364", "365", "366", "367"], correct: 2 },
+                { question: "What is the largest ocean on Earth?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], correct: 3 },
+                { question: "Which is the longest river in the world?", options: ["Amazon", "Nile", "Mississippi", "Yangtze"], correct: 1 },
+                { question: "What is the chemical symbol for water?", options: ["H2O", "CO2", "NaCl", "O2"], correct: 0 },
+                { question: "How many continents are there?", options: ["5", "6", "7", "8"], correct: 2 },
+                { question: "Which is the smallest country in the world?", options: ["Monaco", "Vatican City", "San Marino", "Liechtenstein"], correct: 1 },
+                { question: "What is the capital of France?", options: ["London", "Berlin", "Paris", "Madrid"], correct: 2 },
+                { question: "How many hours are in a day?", options: ["23", "24", "25", "26"], correct: 1 },
+                { question: "Which season comes after spring?", options: ["Winter", "Summer", "Fall", "Autumn"], correct: 1 },
+                { question: "What do bees collect from flowers?", options: ["Pollen", "Water", "Leaves", "Seeds"], correct: 0 },
+                { question: "How many legs does a spider have?", options: ["6", "8", "10", "12"], correct: 1 },
+                { question: "What is the main ingredient in bread?", options: ["Rice", "Flour", "Sugar", "Salt"], correct: 1 },
+                { question: "Which fruit is known for keeping doctors away?", options: ["Banana", "Orange", "Apple", "Grape"], correct: 2 },
+                { question: "What do we call frozen water?", options: ["Steam", "Ice", "Snow", "Rain"], correct: 1 },
+                { question: "How many minutes are in an hour?", options: ["50", "60", "70", "80"], correct: 1 },
+                { question: "Which direction does the sun rise?", options: ["North", "South", "East", "West"], correct: 2 }
+            ],
+            hard: [
+                { question: "Boris Becker contested consecutive Wimbledon men's singles finals in 1988, 1989, and 1990, winning in 1989. Who was his opponent in all three matches?", options: ["Michael Stich", "Andre Agassi", "Ivan Lendl", "Stefan Edberg"], correct: 3 },
+                { question: "Suharto held the office of president in which large Asian nation?", options: ["Malaysia", "Japan", "Indonesia", "Thailand"], correct: 2 },
+                { question: "Who was Henry VIII's wife at the time of his death?", options: ["Catherine Parr", "Catherine of Aragon", "Anne Boleyn", "Jane Seymour"], correct: 0 },
+                { question: "What do you most fear in hormephobia?", options: ["Saliva", "Shock", "Worms", "Silence"], correct: 1 },
+                { question: "For what did Einstein get the Nobel prize in Physics?", options: ["Quantum mechanics", "Nuclear fission", "Photoelectric effect", "Theory of Relativity"], correct: 2 },
+                { question: "Which chemical element has the symbol 'Au'?", options: ["Silver", "Gold", "Aluminum", "Argon"], correct: 1 },
+                { question: "What is the square root of 144?", options: ["11", "12", "13", "14"], correct: 1 },
+                { question: "In which year did the Berlin Wall fall?", options: ["1987", "1988", "1989", "1990"], correct: 2 },
+                { question: "Who painted 'The Starry Night'?", options: ["Pablo Picasso", "Vincent van Gogh", "Claude Monet", "Leonardo da Vinci"], correct: 1 },
+                { question: "What is the capital of Kazakhstan?", options: ["Almaty", "Astana", "Nur-Sultan", "Shymkent"], correct: 2 },
+                { question: "Which planet has the most moons?", options: ["Jupiter", "Saturn", "Uranus", "Neptune"], correct: 1 },
+                { question: "What is the smallest prime number?", options: ["0", "1", "2", "3"], correct: 2 },
+                { question: "Who wrote 'One Hundred Years of Solitude'?", options: ["Jorge Luis Borges", "Gabriel García Márquez", "Mario Vargas Llosa", "Isabel Allende"], correct: 1 },
+                { question: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Platinum"], correct: 2 },
+                { question: "In which city was Mozart born?", options: ["Vienna", "Salzburg", "Prague", "Munich"], correct: 1 },
+                { question: "What is the chemical formula for ozone?", options: ["O2", "O3", "H2O2", "CO2"], correct: 1 },
+                { question: "Who was the first person to walk on the moon?", options: ["Buzz Aldrin", "Neil Armstrong", "John Glenn", "Alan Shepard"], correct: 1 },
+                { question: "What is the largest bone in the human body?", options: ["Tibia", "Femur", "Humerus", "Radius"], correct: 1 },
+                { question: "In which year did World War I begin?", options: ["1913", "1914", "1915", "1916"], correct: 1 },
+                { question: "What is the speed of light in a vacuum?", options: ["299,792,458 m/s", "300,000,000 m/s", "299,000,000 m/s", "301,000,000 m/s"], correct: 0 },
+                { question: "Who developed the theory of evolution by natural selection?", options: ["Gregor Mendel", "Charles Darwin", "Alfred Wallace", "Jean-Baptiste Lamarck"], correct: 1 },
+                { question: "What is the pH of pure water?", options: ["6", "7", "8", "9"], correct: 1 },
+                { question: "Which composer wrote 'The Four Seasons'?", options: ["Johann Bach", "Wolfgang Mozart", "Antonio Vivaldi", "Ludwig Beethoven"], correct: 2 },
+                { question: "What is the most abundant gas in Earth's atmosphere?", options: ["Oxygen", "Carbon dioxide", "Nitrogen", "Argon"], correct: 2 },
+                { question: "In Greek mythology, who is the god of the sea?", options: ["Zeus", "Hades", "Apollo", "Poseidon"], correct: 3 }
+            ]
+        };
+
+        // Current state
+        let currentScreen = 0;
+        let currentTriviaQuestion = 0;
+        let triviaStartTime = null;
+        let triviaTimer = null;
+        let selectedTreatment = null;
+
+        // Screen management
+        const screens = [
+            'p-intro', 'p-trivia-instr', 'p-trivia-task', 'p-classification',
+            'p-belief-instr', 'p-belief-own', 'p-group-instr', 'p-group-show',
+            'p-hire-instr', 'p-hire', 'p-mech-instr', 'p-mech-belief',
+            'p-demo', 'p-results', 'p-data-export'
+        ];
+
+        function updateProgress() {
+            const progress = ((currentScreen + 1) / screens.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('page-indicator').textContent = `Screen ${currentScreen + 1} of ${screens.length}`;
+        }
+
+        function goToScreen(screenIndex) {
+            if (screenIndex < 0 || screenIndex >= screens.length) return;
+            
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(screens[screenIndex]).classList.add('active');
+            currentScreen = screenIndex;
+            updateProgress();
+            
+            if (!experimentData.completedScreens.includes(screens[screenIndex])) {
+                experimentData.completedScreens.push(screens[screenIndex]);
+            }
+            
+            window.scrollTo(0, 0);
+        }
+
+        function nextScreen() {
+            if (currentScreen < screens.length - 1) {
+                goToScreen(currentScreen + 1);
+            }
+        }
+
+        // Trivia task functions
+        function startTrivia() {
+            selectedTreatment = Math.random() < 0.5 ? 'easy' : 'hard';
+            experimentData.treatment = selectedTreatment;
+            
+            currentTriviaQuestion = 0;
+            triviaStartTime = Date.now();
+            experimentData.triviaAnswers = new Array(25).fill(null);
+            
+            nextScreen();
+            displayTriviaQuestion();
+            startTimer();
+        }
+
+        function displayTriviaQuestion() {
+            const questions = triviaQuestions[selectedTreatment];
+            const question = questions[currentTriviaQuestion];
+            
+            document.getElementById('trivia-container').innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Question ${currentTriviaQuestion + 1} of 25</div>
+                    <h3>${question.question}</h3>
+                    <div class="options">
+                        ${question.options.map((option, index) => `
+                            <label class="option" onclick="selectOption(${index})" ${experimentData.triviaAnswers[currentTriviaQuestion] === index ? 'class="selected"' : ''}>
+                                <input type="radio" name="q${currentTriviaQuestion}" value="${index}" ${experimentData.triviaAnswers[currentTriviaQuestion] === index ? 'checked' : ''}>
+                                ${String.fromCharCode(65 + index)}. ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            updateTriviaButtons();
+        }
+
+        function updateTriviaButtons() {
+            document.getElementById('prevBtn').style.display = currentTriviaQuestion > 0 ? 'inline-block' : 'none';
+            document.getElementById('nextBtn').style.display = currentTriviaQuestion < 24 ? 'inline-block' : 'none';
+            document.getElementById('submitBtn').style.display = currentTriviaQuestion === 24 ? 'inline-block' : 'none';
+        }
+
+        function selectOption(optionIndex) {
+            experimentData.triviaAnswers[currentTriviaQuestion] = optionIndex;
+            
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[optionIndex].classList.add('selected');
+        }
+
+        function nextQuestion() {
+            if (currentTriviaQuestion < 24) {
+                currentTriviaQuestion++;
+                displayTriviaQuestion();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentTriviaQuestion > 0) {
+                currentTriviaQuestion--;
+                displayTriviaQuestion();
+            }
+        }
+
+        function startTimer() {
+            let timeLeft = 360;
+            
+            triviaTimer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    `Time Remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(triviaTimer);
+                    submitTrivia();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function submitTrivia() {
+            clearInterval(triviaTimer);
+            experimentData.triviaTimeSpent = Date.now() - triviaStartTime;
+            
+            const questions = triviaQuestions[selectedTreatment];
+            let score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (experimentData.triviaAnswers[i] === questions[i].correct) {
+                    score++;
+                }
+            }
+            experimentData.triviaScore = score;
+            experimentData.performanceLevel = score >= 13 ? 'High' : 'Low';
+            
+            nextScreen();
+        }
+
+        // Belief and decision functions
+        function submitBeliefOwn() {
+            const belief = document.getElementById('beliefOwn').value;
+            const errorEl = document.getElementById('beliefOwnError');
+            
+            if (belief === '' || belief < 0 || belief > 100) {
+                errorEl.textContent = 'Please enter a value between 0 and 100.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            errorEl.style.display = 'none';
+            experimentData.beliefOwnPerformance = parseInt(belief);
+            nextScreen();
+        }
+
+        function assignGroup() {
+            const mechanismUsed = Math.random() < 0.5 ? 'A' : 'B';
+            experimentData.mechanismUsed = mechanismUsed;
+            
+            const accuracy = mechanismUsed === 'A' ? 0.95 : 0.55;
+            const reflectsPerformance = Math.random() < accuracy;
+            
+            let assignedGroup;
+            if (reflectsPerformance) {
+                assignedGroup = experimentData.performanceLevel === 'High' ? 'Top' : 'Bottom';
+            } else {
+                assignedGroup = experimentData.performanceLevel === 'High' ? 'Bottom' : 'Top';
+            }
+            
+            experimentData.assignedGroup = assignedGroup;
+            
+            document.getElementById('groupDisplay').innerHTML = `
+                <div style="color: ${assignedGroup === 'Top' ? 'var(--success)' : 'var(--warning)'}">${assignedGroup} Group</div>
+            `;
+            
+            nextScreen();
+        }
+
+        function submitHiring() {
+            const wtpTop = document.getElementById('wtpTop').value;
+            const wtpBottom = document.getElementById('wtpBottom').value;
+            const topError = document.getElementById('wtpTopError');
+            const bottomError = document.getElementById('wtpBottomError');
+            
+            let hasError = false;
+            
+            if (wtpTop === '' || wtpTop < 0 || wtpTop > 200) {
+                topError.textContent = 'Please enter a value between 0 and 200.';
+                topError.style.display = 'block';
+                hasError = true;
+            } else {
+                topError.style.display = 'none';
+            }
+            
+            if (wtpBottom === '' || wtpBottom < 0 || wtpBottom > 200) {
+                bottomError.textContent = 'Please enter a value between 0 and 200.';
+                bottomError.style.display = 'block';
+                hasError = true;
+            } else {
+                bottomError.style.display = 'none';
+            }
+            
+            if (hasError) return;
+            
+            experimentData.wtpTopGroup = parseInt(wtpTop);
+            experimentData.wtpBottomGroup = parseInt(wtpBottom);
+            nextScreen();
+        }
+
+        function submitMechBelief() {
+            const belief = document.getElementById('beliefMech').value;
+            const errorEl = document.getElementById('beliefMechError');
+            
+            if (belief === '' || belief < 0 || belief > 100) {
+                errorEl.textContent = 'Please enter a value between 0 and 100.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            errorEl.style.display = 'none';
+            experimentData.beliefMechanism = parseInt(belief);
+            nextScreen();
+        }
+
+        function submitDemo() {
+            const gender = document.getElementById('gender').value;
+            const age = document.getElementById('age').value;
+            const education = document.getElementById('education').value;
+            const taskDifficulty = document.getElementById('taskDifficulty').value;
+            const errorEl = document.getElementById('demoError');
+            
+            if (!gender || !age || !education || !taskDifficulty) {
+                errorEl.textContent = 'Please complete all fields.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            if (age < 18 || age > 99) {
+                errorEl.textContent = 'Please enter a valid age between 18 and 99.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            errorEl.style.display = 'none';
+            
+            experimentData.demographics = {
+                gender: gender,
+                age: parseInt(age),
+                education: education,
+                taskDifficulty: taskDifficulty
+            };
+            
+            experimentData.endTime = new Date().toISOString();
+            displayResults();
+            nextScreen();
+        }
+
+        function displayResults() {
+            const wtpPremium = experimentData.wtpTopGroup - experimentData.wtpBottomGroup;
+            
+            document.getElementById('resultsSummary').innerHTML = `
+                <div class="results-item"><span>Treatment:</span><span>${experimentData.treatment === 'easy' ? 'Easy Trivia' : 'Hard Trivia'}</span></div>
+                <div class="results-item"><span>Trivia Score:</span><span>${experimentData.triviaScore}/25</span></div>
+                <div class="results-item"><span>Performance Level:</span><span>${experimentData.performanceLevel}</span></div>
+                <div class="results-item"><span>Belief Own Performance:</span><span>${experimentData.beliefOwnPerformance}%</span></div>
+                <div class="results-item"><span>Assigned Group:</span><span>${experimentData.assignedGroup}</span></div>
+                <div class="results-item"><span>Mechanism Used:</span><span>${experimentData.mechanismUsed}</span></div>
+                <div class="results-item"><span>WTP Top Group:</span><span>${experimentData.wtpTopGroup} tokens</span></div>
+                <div class="results-item"><span>WTP Bottom Group:</span><span>${experimentData.wtpBottomGroup} tokens</span></div>
+                <div class="results-item"><span>WTP Premium (Top - Bottom):</span><span>${wtpPremium} tokens</span></div>
+                <div class="results-item"><span>Belief Mechanism A:</span><span>${experimentData.beliefMechanism}%</span></div>
+            `;
+            
+            // Simulate payment calculation
+            const tasks = ['Trivia Performance', 'Belief Own Performance', 'Hiring Decision'];
+            const selectedTask = tasks[Math.floor(Math.random() * 3)];
+            const tokensEarned = Math.floor(Math.random() * 200) + 100;
+            const tokenValue = (tokensEarned * 0.09).toFixed(2);
+            const totalPayment = (5 + parseFloat(tokenValue)).toFixed(2);
+            
+            document.getElementById('selectedTask').textContent = selectedTask;
+            document.getElementById('tokensEarned').textContent = tokensEarned;
+            document.getElementById('tokenValue').textContent = '$' + tokenValue;
+            document.getElementById('totalPayment').textContent = '$' + totalPayment;
+        }
+
+        function showDataExport() {
+            document.getElementById('rawData').value = JSON.stringify(experimentData, null, 2);
+            goToScreen(14);
+        }
+
+        function downloadData() {
+            const dataStr = JSON.stringify(experimentData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `experiment_data_${experimentData.participantId}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            document.getElementById('rawData').select();
+            document.execCommand('copy');
+            alert('Data copied to clipboard!');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            
+            // Prevent accidental navigation away
+            window.addEventListener('beforeunload', function(e) {
+                if (currentScreen > 0 && currentScreen < screens.length - 1) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
